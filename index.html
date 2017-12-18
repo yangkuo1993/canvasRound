@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas</title>
+    <style>
+        html,body{
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="round"></canvas>
+<script>
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+    }
+    var canvas = document.getElementById('round');
+    var ctx = canvas.getContext('2d');
+    ctx.canvas.height = window.innerHeight;
+    ctx.canvas.width = window.innerWidth;
+    var colorArray = ['#ea80fc', '#ff1744', '#64b5f6', '#76ff03', '#00e676'];
+    function Round() {
+        this.r = getRandomIntInclusive(10,30);
+        this.color = colorArray[getRandomIntInclusive(0,4)];
+        this.rx = getRandomIntInclusive(0, window.innerWidth);
+        this.ry = getRandomIntInclusive(0, window.innerHeight);
+        this.speedX = getRandomIntInclusive(0, 1) === 1 ? 1 : -1;
+        this.speedY = getRandomIntInclusive(0, 1) === 1 ? 1 : -1;
+    }
+    Round.prototype.move = function () {
+        this.rx += this.speedX;
+        this.ry += this.speedY;
+        // 左边界
+        if((this.rx - this.r) <= 0) {
+            this.rx = 0 + this.r;
+            this.speedX *= -1;
+        }
+        // 右边界
+        if((this.rx + this.r) >= window.innerWidth){
+            this.rx = window.innerWidth - this.r;
+            this.speedX *= -1;
+        }
+        //上边界
+        if((this.ry - this.r) <= 0) {
+            this.ry = 0 + this.r;
+            this.speedY *= -1;
+        }
+        // 下边界
+        if((this.ry + this.r) >= window.innerHeight){
+            this.ry = window.innerHeight - this.r;
+            this.speedY *= -1;
+        }
+    };
+    Round.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.rx,this.ry,this.r,0,Math.PI*2,false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    };
+    var balls = [];
+    for (var i = 0;i < 2;i++) {
+        var ball = new Round();
+        balls.push(ball);
+    }
+    setInterval(function () {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for(var j = 0; j < balls.length; j++) {
+            balls[j].move();
+            balls[j].draw();
+        }
+    }, 1000/60)
+</script>
+</body>
+</html>
